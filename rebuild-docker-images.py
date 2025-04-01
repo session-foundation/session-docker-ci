@@ -26,7 +26,7 @@ parser.add_option('--keep-going', action="store_true",
 
 (options, args) = parser.parse_args()
 
-registry_base = 'reg.oxen.rocks:80/'
+registry_base = 'reg.session.codes:80/'
 registry_insecure = True
 
 playwright_tag = 'playwright:v1.37.0'
