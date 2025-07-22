@@ -394,6 +394,7 @@ RUN {apt_get_quiet} update \
         make \
         openjdk-21-jdk \
         openssh-client \
+        ninja-build \
         patch \
         pkg-config \
         wget \
