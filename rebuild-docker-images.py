@@ -38,7 +38,7 @@ apt_get_quiet = 'apt-get -o=Dpkg::Use-Pty=0 -q'
 
 distros = [*(('debian', x) for x in ('sid', 'stable', 'testing', 'forky', 'trixie', 'bookworm', 'bullseye')),
            *(('ubuntu', x) for x in ('rolling', 'lts',
-               'questing', 'plucky', 'oracular', 'noble', 'jammy', 'focal')),
+               'questing', 'plucky', 'noble', 'jammy', 'focal')),
            *(('session-desktop-builder', x) for x in session_desktop_branches),
            *((playwright_tag, x) for x in ('jammy', )),
            *(('appium', x) for x in ('34', )),
