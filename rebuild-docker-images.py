@@ -677,6 +677,7 @@ RUN {apt_get_quiet} install --no-install-recommends -y \
         autoconf \
         automake \
         build-essential \
+        ca-certificates \
         ccache \
         cmake \
         eatmydata \
