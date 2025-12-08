@@ -389,15 +389,15 @@ RUN {apt_get_quiet} update \
         cmake \
         curl \
         git \
-        python3 \
         google-android-ndk-r27c-installer \
         libtool \
         make \
+        ninja-build \
         openjdk-21-jdk \
         openssh-client \
-        ninja-build \
         patch \
         pkg-config \
+        python3 \
         wget \
         xz-utils \
         zip \
