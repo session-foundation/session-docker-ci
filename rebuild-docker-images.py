@@ -389,6 +389,7 @@ RUN {apt_get_quiet} update \
         cmake \
         curl \
         git \
+        python3 \
         google-android-ndk-r27c-installer \
         libtool \
         make \
