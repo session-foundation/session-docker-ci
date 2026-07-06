@@ -39,7 +39,9 @@ apt_get_quiet = 'apt-get -o=Dpkg::Use-Pty=0 -q'
 distros = [*(('debian', x) for x in ('sid', 'stable', 'testing', 'forky', 'trixie', 'bookworm', 'bullseye')),
            *(('ubuntu', x) for x in ('rolling', 'lts',
                'questing', 'plucky', 'noble', 'jammy', 'focal')),
-           *(('session-desktop-builder', x) for x in session_desktop_branches),
+           # Disabled: not currently used by CI (re-enable to build the
+           # session-desktop-builder / session-desktop-playwright images).
+           # *(('session-desktop-builder', x) for x in session_desktop_branches),
            *((playwright_tag, x) for x in ('jammy', )),
            *(('appium', x) for x in ('34', )),
            ]
@@ -472,11 +474,12 @@ RUN {extra_pre} {apt_get_quiet} update \
     && mkdir /session-deps \
     && cd /session-deps \
     && wget {repo_base}/package.json \
-    && wget {repo_base}/yarn.lock \
-    && yarn install --frozen-lockfile --ignore-scripts \
-    && (cd node_modules/libsession_util_nodejs && yarn install --frozen-lockfile) \
-    && yarn patch-package \
-    && yarn electron-builder install-app-deps \
+    && wget {repo_base}/pnpm-lock.yaml \
+    && wget {repo_base}/pnpm-workspace.yaml \
+    && export PNPM_HOME=/root/.local/share/pnpm \
+    && corepack enable \
+    && pnpm config set store-dir /root/.local/share/pnpm/store \
+    && pnpm fetch \
 """)
     check_done_build(tag)
 
