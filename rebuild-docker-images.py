@@ -525,7 +525,7 @@ RUN echo "man-db man-db/auto-update boolean false" | debconf-set-selections \
         time
 
 ENV NVM_DIR /usr/local/nvm
-ENV NODE_VERSION 18.15.0
+ENV NODE_VERSION 24.12.0
 ENV SESSION_DESKTOP_ROOT /root/session-desktop
 ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
 ENV CI 1
