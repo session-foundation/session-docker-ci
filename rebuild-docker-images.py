@@ -362,14 +362,19 @@ def debian_clang_build():
     """For debian-sid/amd64 we also build an extra one with clang+llvm"""
 
     tag = f'{registry_base}debian-sid-clang'
+    def clang(suffix=''):
+        """clang/lld/llvm package names, optionally with a '-NN' version suffix"""
+        return ' '.join(pkg + suffix for pkg in ('clang', 'lld', 'llvm'))
     build_tag(tag, 'amd64', f"""
 FROM {registry_base}debian-sid/amd64
 RUN {apt_get_quiet} update \
     && {apt_get_quiet} dist-upgrade -y \
     && {apt_get_quiet} --no-install-recommends install -y \
-        clang clang-14 clang-18 clang-19 clang-21 \
-        lld   lld-14   lld-18   lld-19   lld-21 \
-        llvm  llvm-14  llvm-18  llvm-19  llvm-21 \
+        {clang()} \
+        {clang('-18')} \
+        {clang('-19')} \
+        {clang('-21')} \
+        {clang('-22')} \
         libc++-dev \
         libc++abi-dev
 """, manifest_now=True)
