@@ -516,6 +516,7 @@ def playwright_build(distro, arch):
 FROM mcr.microsoft.com/{playwright_version}
 RUN echo "man-db man-db/auto-update boolean false" | debconf-set-selections \
     && {apt_get_quiet} remove -y --purge nodejs \
+    && rm -f /etc/apt/sources.list.d/nodesource.list \
     && {apt_get_quiet} update \
     && {apt_get_quiet} dist-upgrade -y \
     && {apt_get_quiet} install --no-install-recommends -y \
