@@ -38,7 +38,7 @@ apt_get_quiet = 'apt-get -o=Dpkg::Use-Pty=0 -q'
 
 distros = [*(('debian', x) for x in ('sid', 'stable', 'testing', 'forky', 'trixie', 'bookworm', 'bullseye')),
            *(('ubuntu', x) for x in ('rolling', 'lts',
-               'questing', 'plucky', 'noble', 'jammy', 'focal')),
+               'resolute', 'noble', 'jammy', 'focal')),
            # Disabled: not currently used by CI (re-enable to build the
            # session-desktop-builder / session-desktop-playwright images).
            # *(('session-desktop-builder', x) for x in session_desktop_branches),
