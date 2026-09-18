@@ -396,7 +396,7 @@ RUN {apt_get_quiet} update \
         cmake \
         curl \
         git \
-        google-android-ndk-r27c-installer \
+        google-android-ndk-r29-installer \
         libtool \
         make \
         ninja-build \
