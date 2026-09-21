@@ -142,10 +142,7 @@ def build_tag(tag_base, arch, contents, *, manifest_now=False, prebuild_callback
         if prebuild_callback:
             prebuild_callback(dockerdir)
 
-        old_tag_base = tag_base.replace("/", "/lokinet-ci-", 1)
-
         tag = f'{tag_base}/{arch}'
-        old_tag = f'{old_tag_base}/arch'
         print_line(myline,     f"\033[33;1mRebuilding        \033[35;1m{tag}\033[0m")
         run_or_report('docker', 'build', '--pull', '-t', tag,
                       *(('--no-cache',) if options.no_cache else ()), '.', myline=myline, cwd=dockerdir)
@@ -154,23 +151,16 @@ def build_tag(tag_base, arch, contents, *, manifest_now=False, prebuild_callback
         else:
             print_line(myline, f"\033[33;1mPushing           \033[35;1m{tag}\033[0m")
             run_or_report('docker', 'push', tag, myline=myline)
-            run_or_report('docker', 'tag', tag, old_tag, myline=myline)
-            run_or_report('docker', 'push', old_tag, myline=myline)
 
         print_line(myline,     f"\033[32;1mFinished build    \033[35;1m{tag}\033[0m")
 
         latest = tag_base + ':latest'
-        old_latest = old_tag_base + ':latest'
         global manifests
         with manifestlock:
             if latest in manifests:
                 manifests[latest].append(tag)
             else:
                 manifests[latest] = [tag]
-            if old_latest in manifests:
-                manifests[old_latest].append(old_tag)
-            else:
-                manifests[old_latest] = [old_tag]
 
         if manifest_now:
             push_manifest(tag_base)
@@ -748,7 +738,7 @@ RUN {apt_get_quiet} update \
 """, manifest_now=True)
 
 
-def push_manifest(image, lokinet_ci_alias=True):
+def push_manifest(image):
     if options.no_push:
         return
 
@@ -772,9 +762,6 @@ def push_manifest(image, lokinet_ci_alias=True):
     print_line(myline, f"\033[33;1mPushing manifest  \033[35;1m{latest}\033[0m")
     run_or_report('docker', 'manifest', 'push', *manifest_extra, latest, myline=myline)
     print_line(myline, f"\033[32;1mFinished manifest \033[35;1m{latest}\033[0m")
-
-    if lokinet_ci_alias:
-        push_manifest(image.replace("/", "/lokinet-ci-", 1), lokinet_ci_alias=False)
 
 
 
