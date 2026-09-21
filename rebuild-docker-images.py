@@ -258,7 +258,7 @@ def distro_build(distro, arch):
     build_tag(tag, arch, f"""
 FROM {builder}/{arch}
 RUN curl -so /usr/share/keyrings/session-foundation.gpg https://deb.session.foundation/pub.gpg \
-    && echo -e "Types: deb\nURIs: https://deb.session.foundation\nSuites: {distro[1]}\nComponents: main\nSigned-By: /usr/share/keyrings/session-foundation.gpg" >/etc/apt/sources.list.d/session.sources \
+    && echo -e "Types: deb\\nURIs: https://deb.session.foundation\\nSuites: {distro[1]}\\nComponents: main\\nSigned-By: /usr/share/keyrings/session-foundation.gpg" >/etc/apt/sources.list.d/session.sources \
     && {apt_get_quiet} update \
     && {apt_get_quiet} dist-upgrade -y \
     && {apt_get_quiet} --no-install-recommends install -y \
