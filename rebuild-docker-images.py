@@ -267,7 +267,9 @@ def distro_build(distro, arch):
     tag = f'{registry_base}{distro[0]}-{distro[1]}'
     build_tag(tag, arch, f"""
 FROM {builder}/{arch}
-RUN {apt_get_quiet} update \
+RUN curl -so /usr/share/keyrings/session-foundation.gpg https://deb.session.foundation/pub.gpg \
+    && echo -e "Types: deb\nURIs: https://deb.session.foundation\nSuites: {distro[1]}\nComponents: main\nSigned-By: /usr/share/keyrings/session-foundation.gpg" >/etc/apt/sources.list.d/session.sources \
+    && {apt_get_quiet} update \
     && {apt_get_quiet} dist-upgrade -y \
     && {apt_get_quiet} --no-install-recommends install -y \
         automake \
@@ -291,6 +293,8 @@ RUN {apt_get_quiet} update \
         libminiupnpc-dev \
         libngtcp2-crypto-gnutls-dev \
         libngtcp2-dev \
+        liboxenc-dev \
+        liboxen-quic-dev \
         libprotobuf-dev \
         libreadline-dev \
         libsodium-dev \
