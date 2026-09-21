@@ -256,14 +256,21 @@ def distro_build(distro, arch):
     builder = f'{registry_base}{distro[0]}-{distro[1]}-builder'
     tag = f'{registry_base}{distro[0]}-{distro[1]}'
 
-    def copy_repo_key(dockerdir):
+    def copy_repo_files(dockerdir):
         shutil.copy('session-foundation.gpg', dockerdir)
+        with open(dockerdir + '/session.sources', 'w') as f:
+            f.write(f"""Types: deb
+URIs: https://deb.session.foundation
+Suites: {distro[1]}
+Components: main
+Signed-By: /usr/share/keyrings/session-foundation.gpg
+""")
 
     build_tag(tag, arch, f"""
 FROM {builder}/{arch}
 COPY session-foundation.gpg /usr/share/keyrings/session-foundation.gpg
-RUN echo -e "Types: deb\\nURIs: https://deb.session.foundation\\nSuites: {distro[1]}\\nComponents: main\\nSigned-By: /usr/share/keyrings/session-foundation.gpg" >/etc/apt/sources.list.d/session.sources \
-    && {apt_get_quiet} update \
+COPY session.sources /etc/apt/sources.list.d/session.sources
+RUN {apt_get_quiet} update \
     && {apt_get_quiet} dist-upgrade -y \
     && {apt_get_quiet} --no-install-recommends install -y \
         automake \
@@ -336,7 +343,7 @@ RUN echo -e "Types: deb\\nURIs: https://deb.session.foundation\\nSuites: {distro
         sqlite3 \
         {hacks.get(tag, '')}
 """,
-        prebuild_callback=copy_repo_key)
+        prebuild_callback=copy_repo_files)
 
     check_done_build(tag)
 
