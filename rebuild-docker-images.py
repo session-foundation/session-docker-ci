@@ -281,14 +281,20 @@ RUN {apt_get_quiet} update \
         libboost-program-options-dev \
         libboost-serialization-dev \
         libboost-thread-dev \
-        libcurl4-openssl-dev \
+        libcurl4-gnutls-dev \
         libevent-dev \
+        libfmt-dev \
+        libgnutls28-dev \
         libgtest-dev \
         libhidapi-dev \
         libjemalloc-dev \
         libminiupnpc-dev \
+        libngtcp2-crypto-gnutls-dev \
+        libngtcp2-dev \
+        libprotobuf-dev \
         libreadline-dev \
         libsodium-dev \
+        libspdlog-dev \
         libsqlite3-dev \
         libssl-dev \
         libsystemd-dev \
@@ -296,8 +302,10 @@ RUN {apt_get_quiet} update \
         libunbound-dev \
         libunwind8-dev \
         libusb-1.0.0-dev \
+        libutf8proc-dev \
         libuv1-dev \
         libzmq3-dev \
+        libzstd-dev \
         lsb-release \
         make \
         nettle-dev \
