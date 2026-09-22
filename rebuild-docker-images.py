@@ -256,12 +256,27 @@ def distro_build(distro, arch):
     builder = f'{registry_base}{distro[0]}-{distro[1]}-builder'
     tag = f'{registry_base}{distro[0]}-{distro[1]}'
 
+    # ubuntu's lts/rolling are moving aliases rather than suites our apt repo publishes, so we
+    # leave a placeholder for the image to fill in with its own codename at build time.  (debian's
+    # testing/stable need no such thing: the repo publishes suite symlinks for those.)
+    #
+    # /etc/os-release rather than lsb_release because lsb-release isn't installed in the -builder
+    # image and can't be, given apt-get update is what fails while the suite is unresolved.  Not
+    # applicable to debian, where sid's os-release reports the current *testing* codename.
+    if distro[1] in ('lts', 'rolling'):
+        suite = '@SUITE@'
+        resolve_suite = (
+            'RUN . /etc/os-release && test -n "$VERSION_CODENAME"'
+            ' && sed -i "s/@SUITE@/$VERSION_CODENAME/" /etc/apt/sources.list.d/session.sources')
+    else:
+        suite, resolve_suite = distro[1], ''
+
     def copy_repo_files(dockerdir):
         shutil.copy('session-foundation.gpg', dockerdir)
         with open(dockerdir + '/session.sources', 'w') as f:
             f.write(f"""Types: deb
 URIs: https://deb.session.foundation
-Suites: {distro[1]}
+Suites: {suite}
 Components: main
 Signed-By: /usr/share/keyrings/session-foundation.gpg
 """)
@@ -270,6 +285,7 @@ Signed-By: /usr/share/keyrings/session-foundation.gpg
 FROM {builder}/{arch}
 COPY session-foundation.gpg /usr/share/keyrings/session-foundation.gpg
 COPY session.sources /etc/apt/sources.list.d/session.sources
+{resolve_suite}
 RUN {apt_get_quiet} update \
     && {apt_get_quiet} dist-upgrade -y \
     && {apt_get_quiet} --no-install-recommends install -y \
