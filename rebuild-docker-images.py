@@ -329,6 +329,7 @@ RUN {apt_get_quiet} update \
         libzstd-dev \
         lsb-release \
         make \
+        meson \
         nettle-dev \
         ninja-build \
         openssh-client \
