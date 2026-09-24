@@ -756,6 +756,45 @@ RUN {apt_get_quiet} update \
 """, manifest_now=True)
 
 
+def debian_s390x_cross():
+    """
+    s390x cross compiler image with s390x dev libs and qemu-user to run what it builds: s390x is the
+    big-endian target we test on.  forky rather than testing so that this doesn't move when forky
+    releases.  No session.foundation repo: it publishes nothing for s390x.
+    """
+    tag = f'{registry_base}debian-forky-s390x-cross'
+    libs = ' '.join(f'{pkg}:s390x' for pkg in (
+        'libevent-dev', 'libfmt-dev', 'libgnutls28-dev', 'libngtcp2-crypto-gnutls-dev',
+        'libngtcp2-dev', 'libprotobuf-dev', 'libsimdutf-dev', 'libsodium-dev', 'libspdlog-dev',
+        'libsqlite3-dev', 'libutf8proc-dev', 'libzstd-dev', 'nettle-dev', 'pkgconf'))
+
+    build_tag(tag, 'amd64', f"""
+FROM {registry_base}debian-forky-base/amd64
+RUN dpkg --add-architecture s390x \
+    && {apt_get_quiet} update \
+    && {apt_get_quiet} dist-upgrade -y \
+    && {apt_get_quiet} --no-install-recommends install -y \
+        automake \
+        build-essential \
+        ca-certificates \
+        ccache \
+        cmake \
+        crossbuild-essential-s390x \
+        eatmydata \
+        file \
+        git \
+        libcli11-dev \
+        libtool \
+        make \
+        ninja-build \
+        nlohmann-json3-dev \
+        patch \
+        pkg-config \
+        qemu-user \
+        {libs}
+""", manifest_now=True)
+
+
 def build_docs():
     """ documentation builder image """
 
@@ -874,6 +913,8 @@ with jobs_lock:
                 dep_jobs[prefix].extend(next_singleton(f) for f in (debian_cross_build, build_docs))
             if d == ('debian', 'sid') and 'amd64' in archlist:
                 dep_jobs[prefix].append(next_singleton(debian_clang_build))
+            if d == ('debian', 'forky') and 'amd64' in archlist:
+                dep_jobs[prefix + "-base"].append(next_singleton(debian_s390x_cross))
 
         for a in archlist:
             jobs.append(executor.submit(build_func, d, a))
