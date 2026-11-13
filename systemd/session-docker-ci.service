@@ -1,0 +1,21 @@
+[Unit]
+Description=Rebuild and push the Session CI docker images
+Wants=network-online.target
+After=network-online.target docker.service
+
+[Service]
+Type=oneshot
+# The user whose ~/.docker/config.json holds the Docker Hub login, and the checkout to run from.
+User=CHANGEME
+WorkingDirectory=/CHANGEME/session-docker-ci
+Environment=PYTHONUNBUFFERED=1
+# DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/...
+EnvironmentFile=-/etc/session-docker-ci.env
+ExecStart=/usr/bin/python3 rebuild-docker-images.py --scheduled --parallel 3 --retries 3 --retry-delay 300
+# 75: another run (a manual one, say) holds the lock; not a failure.
+SuccessExitStatus=75
+TimeoutStartSec=8h
+# /var/log/session-docker-ci: each run's build logs, which failure reports point at.
+LogsDirectory=session-docker-ci
+# /var/lib/session-docker-ci/schedule.json: when each image was last built, for --scheduled.
+StateDirectory=session-docker-ci
